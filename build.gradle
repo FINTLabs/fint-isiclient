@@ -1,0 +1,69 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'no.nils:wsdl2java:0.10'
+    }
+}
+
+plugins {
+    id 'com.github.ben-manes.versions' version '0.15.0'
+    id 'com.jfrog.bintray' version '1.7.3'
+    id 'com.github.kt3k.coveralls' version '2.8.1'
+}
+
+apply plugin: 'no.nils.wsdl2java'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'groovy'
+apply plugin: 'jacoco'
+
+jar {
+    baseName = 'fint-isiclient'
+    version = '0.0.1-SNAPSHOT'
+}
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    jcenter()
+    maven {
+        url "http://dl.bintray.com/fint/maven"
+    }
+}
+
+apply from: 'https://raw.githubusercontent.com/FINTlibs/fint-buildscripts/v1.0.14/dependencies.gradle'
+dependencies {
+    testCompile("org.spockframework:spock-core:${spockSpringVersion}")
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = gradleVersion
+}
+
+test {
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
+if (project.hasProperty('bintrayUser') && project.hasProperty('bintrayKey')) {
+    apply from: 'https://raw.githubusercontent.com/FINTlibs/fint-buildscripts/v1.0.14/bintray.gradle'
+}
+
+wsdl2java {
+    generatedWsdlDir = file('generated-sources')
+    wsdlsToGenerate = [['-client', 'src/main/resources/ISIPartnerEndpoint.wsdl']]
+}
+
+wsdl2javaExt {
+    cxfVersion = '3.1.11'
+}

@@ -1,0 +1,55 @@
+<definitions xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:wsp1_2="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://isi.ist.biz/wsdl" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://isi.ist.biz/wsdl" name="isiPartnerService">
+    <types>
+        <xsd:schema>
+            <xsd:import namespace="http://isi.ist.biz/types" schemaLocation="https://isi.ist.com:443/isi/ws/ISIPartnerEndpoint?xsd=1"/>
+        </xsd:schema>
+    </types>
+    <message name="isiPartnerPull">
+        <part xmlns:ns1="http://isi.ist.biz/types" name="isiPartnerPull" element="ns1:isiPartnerPull"/>
+    </message>
+    <message name="isiPartnerPullResponse">
+        <part xmlns:ns2="http://isi.ist.biz/types" name="isiPartnerPullResponse" element="ns2:isiPartnerPullResponse"/>
+    </message>
+    <message name="isiPartnerPush">
+        <part xmlns:ns3="http://isi.ist.biz/types" name="isiPartnerPush" element="ns3:isiPartnerPush"/>
+    </message>
+    <message name="isiPartnerPushResponse">
+        <part xmlns:ns4="http://isi.ist.biz/types" name="isiPartnerPushResponse" element="ns4:isiPartnerPushResponse"/>
+    </message>
+    <portType name="isiPartnerInterface">
+        <operation name="isiPartnerPull">
+            <input wsam:Action="http://isi.ist.biz/wsdl/isiPartnerInterface/isiPartnerPullRequest" message="tns:isiPartnerPull"/>
+            <output wsam:Action="http://isi.ist.biz/wsdl/isiPartnerInterface/isiPartnerPullResponse" message="tns:isiPartnerPullResponse"/>
+        </operation>
+        <operation name="isiPartnerPush">
+            <input wsam:Action="http://isi.ist.biz/wsdl/isiPartnerInterface/isiPartnerPushRequest" message="tns:isiPartnerPush"/>
+            <output wsam:Action="http://isi.ist.biz/wsdl/isiPartnerInterface/isiPartnerPushResponse" message="tns:isiPartnerPushResponse"/>
+        </operation>
+    </portType>
+    <binding name="isiPartnerPortBinding" type="tns:isiPartnerInterface">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <operation name="isiPartnerPull">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="isiPartnerPush">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="isiPartnerService">
+        <port name="isiPartnerPort" binding="tns:isiPartnerPortBinding">
+            <soap:address location="https://isi.ist.com:443/isi/ws/ISIPartnerEndpoint"/>
+        </port>
+    </service>
+</definitions>
