@@ -39,9 +39,9 @@ boolean created = client.createFile(config);
 
 ## Integration tests
 
-To enable integration tests (`FintIsiclientIntegrationSpec`) add the file `integrationtest.properties` to src/test/resources and set the system property `integrationTestsEnabled=true`.
-The file should contains these properties:  
-
+To enable integration tests (`FintIsiclientIntegrationSpec`):  
+1) Set the system property `integrationTestsEnabled=true`.  
+2) Add the file `integrationtest.properties` to src/test/resources and set the system property. The file should contains these properties:  
 ```properties
 password=
 sourceSystemId=
