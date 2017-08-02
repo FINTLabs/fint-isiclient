@@ -14,7 +14,7 @@ repositories {
     }
 }
 
-compile('no.fint:fint-isiclient:0.0.2')
+compile('no.fint:fint-isiclient:1.0.0')
 ```
 
 ## Usage
