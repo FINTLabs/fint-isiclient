@@ -20,7 +20,6 @@ apply plugin: 'jacoco'
 
 jar {
     baseName = 'fint-isiclient'
-    version = '0-SNAPSHOT'
 }
 
 sourceCompatibility = 1.8
