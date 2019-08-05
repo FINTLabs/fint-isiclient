@@ -4,7 +4,7 @@ import biz.ist.isi.types.*;
 import biz.ist.isi.wsdl.IsiPartnerInterface;
 import biz.ist.isi.wsdl.IsiPartnerService;
 import lombok.Setter;
-import no.fint.isiclient.dto.IsiclientConfig;
+import no.fint.isiclient.dto.IsiClientConfig;
 import org.apache.commons.io.IOUtils;
 
 import javax.xml.namespace.QName;
@@ -36,7 +36,7 @@ public class FintIsiclient {
 
     private static final QName SERVICE_NAME = new QName("http://isi.ist.biz/wsdl", "isiPartnerService");
 
-    public boolean createFile(IsiclientConfig config) throws IOException {
+    public boolean createFile(IsiClientConfig config) throws IOException {
         String triggerId = createTrigger(config);
         Optional<byte[]> content = getFileContent(triggerId, config);
         if (content.isPresent()) {
@@ -48,7 +48,7 @@ public class FintIsiclient {
         return false;
     }
 
-    public String getFileContent(IsiclientConfig config) throws IOException {
+    public String getFileContent(IsiClientConfig config) throws IOException {
         String triggerId = createTrigger(config);
         Optional<byte[]> content = getFileContent(triggerId, config);
         if (content.isPresent()) {
@@ -58,7 +58,7 @@ public class FintIsiclient {
         }
     }
 
-    private String createTrigger(IsiclientConfig config) {
+    private String createTrigger(IsiClientConfig config) {
         URL wsdlURL = IsiPartnerService.WSDL_LOCATION;
         IsiPartnerService ss = new IsiPartnerService(wsdlURL, SERVICE_NAME);
         IsiPartnerInterface port = ss.getIsiPartnerPort();
@@ -71,7 +71,7 @@ public class FintIsiclient {
         }
     }
 
-    private IsiPartnerPush createTriggerData(IsiclientConfig config) {
+    private IsiPartnerPush createTriggerData(IsiClientConfig config) {
         IsiSystem system = new IsiSystem();
         system.setSystemId(config.getSourceSystemId());
         system.setPassword(config.getPassword());
@@ -92,16 +92,19 @@ public class FintIsiclient {
         trigger.setSource(source);
         trigger.setDest(dest);
 
-        IsiParam param = new IsiParam();
-        param.setKey(config.getKey());
-        param.setValue(config.getValue());
-        trigger.getParam().add(param);
+        config.getParameters().forEach((key, value) -> {
+            IsiParam param = new IsiParam();
+            param.setKey(key);
+            param.setValue(value);
+            trigger.getParam().add(param);
+        });
+
         isiPartnerPush.getTrigger().add(trigger);
 
         return isiPartnerPush;
     }
 
-    private Optional<byte[]> getFileContent(String triggerId, IsiclientConfig config) throws IOException {
+    private Optional<byte[]> getFileContent(String triggerId, IsiClientConfig config) throws IOException {
         URL wsdlURL = IsiPartnerService.WSDL_LOCATION;
         IsiPartnerService ss = new IsiPartnerService(wsdlURL, SERVICE_NAME);
         IsiPartnerInterface port = ss.getIsiPartnerPort();
@@ -126,7 +129,7 @@ public class FintIsiclient {
         return Optional.empty();
     }
 
-    private IsiPartnerPull createPullData(String triggerId, IsiclientConfig config) {
+    private IsiPartnerPull createPullData(String triggerId, IsiClientConfig config) {
         IsiPartnerPull pull = new IsiPartnerPull();
         pull.setVersion(version);
         pull.setFetchSize(fetchSize);
