@@ -2,8 +2,11 @@ package no.fint.isiclient.dto;
 
 import lombok.Data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Data
-public class IsiclientConfig {
+public class IsiClientConfig {
     private String filePath;
 
     private String serviceClass = "imsService";
@@ -11,14 +14,15 @@ public class IsiclientConfig {
 
     private String sourceSystemId;
     private String sourceSystemName;
-    private String sourceSystemType;
+    private String sourceSystemType = "INTEGRATION_PARTNER";
 
     private String destSystemId;
-    private String destSystemName;
-    private String destSystemType;
+    private String destSystemName = "FINTLABS";
+    private String destSystemType = "INTEGRATION_PARTNER";
 
     private String password;
 
-    private String key;
-    private String value;
+    private Map<String, String> parameters = new HashMap<>();
+
+
 }

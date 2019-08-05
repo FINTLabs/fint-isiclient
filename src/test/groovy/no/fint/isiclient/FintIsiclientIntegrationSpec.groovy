@@ -1,6 +1,6 @@
 package no.fint.isiclient
 
-import no.fint.isiclient.dto.IsiclientConfig
+import no.fint.isiclient.dto.IsiClientConfig
 import no.fint.isiclient.testutils.IntegrationProperties
 import spock.lang.IgnoreIf
 import spock.lang.Requires
@@ -9,14 +9,14 @@ import spock.lang.Specification
 @Requires({ Boolean.valueOf(properties['integrationTestsEnabled']) })
 @IgnoreIf({ IntegrationProperties.FILE_DOES_NOT_EXIST })
 class FintIsiclientIntegrationSpec extends Specification {
-    private IsiclientConfig config
+    private IsiClientConfig config
 
     void setup() {
         def stream = Thread.currentThread().getContextClassLoader().getResourceAsStream('integrationtest.properties')
         def properties = new Properties()
         properties.load(stream)
 
-        config = new IsiclientConfig()
+        config = new IsiClientConfig()
         config.setPassword(properties.getProperty('password'))
         config.setSourceSystemId(properties.getProperty('sourceSystemId'))
         config.setSourceSystemName(properties.getProperty('sourceSystemName'))
