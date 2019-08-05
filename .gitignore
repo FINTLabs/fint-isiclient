@@ -6,3 +6,5 @@ out/
 .DS_Store
 *.iml
 src/test/resources/*.properties
+
+generated-sources/
