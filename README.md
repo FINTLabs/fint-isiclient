@@ -30,8 +30,7 @@ config.setDestSystemName("...");
 config.setDestSystemType("...");
 config.setPassword("...");
 config.setPassword("...");
-config.setKey("...");
-config.setValue("...");
+config.setParameters(parameters);
 
 FintIsiclient client = new FintIsiclient();
 boolean created = client.createFile(config);
@@ -50,6 +49,4 @@ sourceSystemType=
 destSystemId=
 destSystemName=
 destSystemType=
-key=
-value=
 ```

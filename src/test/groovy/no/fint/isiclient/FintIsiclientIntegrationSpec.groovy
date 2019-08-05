@@ -8,7 +8,7 @@ import spock.lang.Specification
 
 @Requires({ Boolean.valueOf(properties['integrationTestsEnabled']) })
 @IgnoreIf({ IntegrationProperties.FILE_DOES_NOT_EXIST })
-class FintIsiclientIntegrationSpec extends Specification {
+class FintIsiClientIntegrationSpec extends Specification {
     private IsiClientConfig config
 
     void setup() {
@@ -24,8 +24,6 @@ class FintIsiclientIntegrationSpec extends Specification {
         config.setDestSystemId(properties.getProperty('destSystemId'))
         config.setDestSystemName(properties.getProperty('destSystemName'))
         config.setDestSystemType(properties.getProperty('destSystemType'))
-        config.setKey(properties.getProperty('key'))
-        config.setValue(properties.getProperty('value'))
         config.setFilePath('build/tmp/test.xml')
     }
 
