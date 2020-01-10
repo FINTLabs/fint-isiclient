@@ -8,6 +8,7 @@ import no.fint.isiclient.dto.IsiClientConfig;
 import org.apache.commons.io.IOUtils;
 
 import javax.xml.namespace.QName;
+import javax.xml.ws.BindingProvider;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -59,9 +60,7 @@ public class FintIsiclient {
     }
 
     private String createTrigger(IsiClientConfig config) {
-        URL wsdlURL = IsiPartnerService.WSDL_LOCATION;
-        IsiPartnerService ss = new IsiPartnerService(wsdlURL, SERVICE_NAME);
-        IsiPartnerInterface port = ss.getIsiPartnerPort();
+        IsiPartnerInterface port = getIsiPartnerInterface(config);
 
         IsiPartnerPushResponse response = port.isiPartnerPush(createTriggerData(config));
         if (response == null || response.getTriggerRegistered() == null || response.getTriggerRegistered().size() == 0) {
@@ -69,6 +68,17 @@ public class FintIsiclient {
         } else {
             return response.getTriggerRegistered().get(0).getTriggerId();
         }
+    }
+
+    private IsiPartnerInterface getIsiPartnerInterface(IsiClientConfig config) {
+        URL wsdlURL = IsiPartnerService.WSDL_LOCATION;
+        IsiPartnerService ss = new IsiPartnerService(wsdlURL, SERVICE_NAME);
+        IsiPartnerInterface isiPartnerPort = ss.getIsiPartnerPort();
+        if (config.getEndpoint() != null && config.getEndpoint().length() > 0) {
+            BindingProvider bp = (BindingProvider) isiPartnerPort;
+            bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, config.getEndpoint());
+        }
+        return isiPartnerPort;
     }
 
     private IsiPartnerPush createTriggerData(IsiClientConfig config) {
@@ -105,9 +115,7 @@ public class FintIsiclient {
     }
 
     private Optional<byte[]> getFileContent(String triggerId, IsiClientConfig config) throws IOException {
-        URL wsdlURL = IsiPartnerService.WSDL_LOCATION;
-        IsiPartnerService ss = new IsiPartnerService(wsdlURL, SERVICE_NAME);
-        IsiPartnerInterface port = ss.getIsiPartnerPort();
+        IsiPartnerInterface port = getIsiPartnerInterface(config);
 
         int counter = 0;
         while (counter < pullMaxRetries) {

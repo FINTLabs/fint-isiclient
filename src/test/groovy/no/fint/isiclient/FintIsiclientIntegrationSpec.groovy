@@ -3,10 +3,8 @@ package no.fint.isiclient
 import no.fint.isiclient.dto.IsiClientConfig
 import no.fint.isiclient.testutils.IntegrationProperties
 import spock.lang.IgnoreIf
-import spock.lang.Requires
 import spock.lang.Specification
 
-@Requires({ Boolean.valueOf(properties['integrationTestsEnabled']) })
 @IgnoreIf({ IntegrationProperties.FILE_DOES_NOT_EXIST })
 class FintIsiClientIntegrationSpec extends Specification {
     private IsiClientConfig config
