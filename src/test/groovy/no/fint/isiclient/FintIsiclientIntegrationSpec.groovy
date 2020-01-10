@@ -22,6 +22,7 @@ class FintIsiClientIntegrationSpec extends Specification {
         config.setDestSystemId(properties.getProperty('destSystemId'))
         config.setDestSystemName(properties.getProperty('destSystemName'))
         config.setDestSystemType(properties.getProperty('destSystemType'))
+        config.setEndpoint(properties.getProperty('endpoint'))
         config.setFilePath('build/tmp/test.xml')
     }
 
