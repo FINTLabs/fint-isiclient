@@ -4,6 +4,7 @@ import biz.ist.isi.types.*;
 import biz.ist.isi.wsdl.IsiPartnerInterface;
 import biz.ist.isi.wsdl.IsiPartnerService;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import no.fint.isiclient.dto.IsiClientConfig;
 import org.apache.commons.io.IOUtils;
 
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
+@Slf4j
 public class FintIsiclient {
 
     @Setter
@@ -39,6 +41,7 @@ public class FintIsiclient {
 
     public boolean createFile(IsiClientConfig config) throws IOException {
         String triggerId = createTrigger(config);
+        log.debug("Created trigger {}", triggerId);
         Optional<byte[]> content = getFileContent(triggerId, config);
         if (content.isPresent()) {
             FileOutputStream file = new FileOutputStream(config.getFilePath());
@@ -119,6 +122,7 @@ public class FintIsiclient {
 
         int counter = 0;
         while (counter < pullMaxRetries) {
+            log.debug("Attempt {}/{}", counter+1, pullMaxRetries);
             IsiPartnerPullResponse response = port.isiPartnerPull(createPullData(triggerId, config));
             if (response.getMessage() != null && response.getMessage().size() > 0) {
                 byte[] byteContent = response.getMessage().get(0).getContent();
@@ -128,6 +132,7 @@ public class FintIsiclient {
                 return Optional.ofNullable(output.toByteArray());
             }
 
+            log.debug("Sleeping for {} ms ...", pullRetryInterval);
             try {
                 Thread.sleep(pullRetryInterval);
             } catch (InterruptedException ignored) {
