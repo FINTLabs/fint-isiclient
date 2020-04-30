@@ -7,6 +7,8 @@ import java.util.Map;
 
 @Data
 public class IsiClientConfig {
+    private String endpoint;
+
     private String filePath;
 
     private String serviceClass = "imsService";

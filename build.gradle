@@ -36,6 +36,7 @@ apply from: 'https://raw.githubusercontent.com/FINTlibs/fint-buildscripts/v1.0.1
 dependencies {
     compile("org.projectlombok:lombok:${lombokVersion}")
     compile('commons-io:commons-io:2.5')
+    compile 'org.slf4j:slf4j-api:1.7.30'
 
     testCompile("org.spockframework:spock-core:${spockSpringVersion}")
 }

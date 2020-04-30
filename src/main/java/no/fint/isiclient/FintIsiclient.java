@@ -4,10 +4,12 @@ import biz.ist.isi.types.*;
 import biz.ist.isi.wsdl.IsiPartnerInterface;
 import biz.ist.isi.wsdl.IsiPartnerService;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import no.fint.isiclient.dto.IsiClientConfig;
 import org.apache.commons.io.IOUtils;
 
 import javax.xml.namespace.QName;
+import javax.xml.ws.BindingProvider;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -17,6 +19,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
+@Slf4j
 public class FintIsiclient {
 
     @Setter
@@ -38,6 +41,7 @@ public class FintIsiclient {
 
     public boolean createFile(IsiClientConfig config) throws IOException {
         String triggerId = createTrigger(config);
+        log.debug("Created trigger {}", triggerId);
         Optional<byte[]> content = getFileContent(triggerId, config);
         if (content.isPresent()) {
             FileOutputStream file = new FileOutputStream(config.getFilePath());
@@ -59,9 +63,7 @@ public class FintIsiclient {
     }
 
     private String createTrigger(IsiClientConfig config) {
-        URL wsdlURL = IsiPartnerService.WSDL_LOCATION;
-        IsiPartnerService ss = new IsiPartnerService(wsdlURL, SERVICE_NAME);
-        IsiPartnerInterface port = ss.getIsiPartnerPort();
+        IsiPartnerInterface port = getIsiPartnerInterface(config);
 
         IsiPartnerPushResponse response = port.isiPartnerPush(createTriggerData(config));
         if (response == null || response.getTriggerRegistered() == null || response.getTriggerRegistered().size() == 0) {
@@ -69,6 +71,17 @@ public class FintIsiclient {
         } else {
             return response.getTriggerRegistered().get(0).getTriggerId();
         }
+    }
+
+    private IsiPartnerInterface getIsiPartnerInterface(IsiClientConfig config) {
+        URL wsdlURL = IsiPartnerService.WSDL_LOCATION;
+        IsiPartnerService ss = new IsiPartnerService(wsdlURL, SERVICE_NAME);
+        IsiPartnerInterface isiPartnerPort = ss.getIsiPartnerPort();
+        if (config.getEndpoint() != null && config.getEndpoint().length() > 0) {
+            BindingProvider bp = (BindingProvider) isiPartnerPort;
+            bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, config.getEndpoint());
+        }
+        return isiPartnerPort;
     }
 
     private IsiPartnerPush createTriggerData(IsiClientConfig config) {
@@ -105,12 +118,11 @@ public class FintIsiclient {
     }
 
     private Optional<byte[]> getFileContent(String triggerId, IsiClientConfig config) throws IOException {
-        URL wsdlURL = IsiPartnerService.WSDL_LOCATION;
-        IsiPartnerService ss = new IsiPartnerService(wsdlURL, SERVICE_NAME);
-        IsiPartnerInterface port = ss.getIsiPartnerPort();
+        IsiPartnerInterface port = getIsiPartnerInterface(config);
 
         int counter = 0;
         while (counter < pullMaxRetries) {
+            log.debug("Attempt {}/{}", counter+1, pullMaxRetries);
             IsiPartnerPullResponse response = port.isiPartnerPull(createPullData(triggerId, config));
             if (response.getMessage() != null && response.getMessage().size() > 0) {
                 byte[] byteContent = response.getMessage().get(0).getContent();
@@ -120,6 +132,7 @@ public class FintIsiclient {
                 return Optional.ofNullable(output.toByteArray());
             }
 
+            log.debug("Sleeping for {} ms ...", pullRetryInterval);
             try {
                 Thread.sleep(pullRetryInterval);
             } catch (InterruptedException ignored) {
