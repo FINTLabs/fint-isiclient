@@ -29,7 +29,7 @@ public class FintIsiclient {
     private int fetchSize = 32;
 
     @Setter
-    private int timeout = 45000;
+    private int timeout = 18000;
 
     @Setter
     private int pullMaxRetries = 50;
