@@ -1,7 +1,5 @@
 # FINT ISI client
 
-[![Build Status](https://travis-ci.org/FINTlibs/fint-isiclient.svg?branch=master)](https://travis-ci.org/FINTlibs/fint-isiclient)
-
 Client for:  
 https://isi.ist.com/isi/ws/ISIPartnerEndpoint?wsdl
 
@@ -10,11 +8,11 @@ https://isi.ist.com/isi/ws/ISIPartnerEndpoint?wsdl
 ```groovy
 repositories {
     maven {
-        url  "http://dl.bintray.com/fint/maven" 
+        url "https://repo.fintlabs.no/releases"
     }
 }
 
-compile('no.fint:fint-isiclient:1.0.0')
+compile('no.fint:fint-isiclient:1.0.1')
 ```
 
 ## Usage

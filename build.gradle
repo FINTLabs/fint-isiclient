@@ -1,20 +1,17 @@
 buildscript {
-    repositories {
-        jcenter()
-    }
     dependencies {
         classpath 'no.nils:wsdl2java:0.10'
     }
 }
 
 plugins {
-    id 'com.github.ben-manes.versions' version '0.15.0'
-    id 'com.jfrog.bintray' version '1.7.3'
+    id 'com.github.ben-manes.versions' version '0.39.0'
 }
 
 apply plugin: 'no.nils.wsdl2java'
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'groovy'
 apply plugin: 'jacoco'
 
@@ -26,13 +23,13 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenLocal()
-    jcenter()
+    mavenCentral()
     maven {
-        url "http://dl.bintray.com/fint/maven"
+        url "https://repo.fintlabs.no/releases"
     }
 }
 
-apply from: 'https://raw.githubusercontent.com/FINTlibs/fint-buildscripts/v1.0.14/dependencies.gradle'
+apply from: 'https://raw.githubusercontent.com/FINTlibs/fint-buildscripts/v1.8.0/dependencies.gradle'
 dependencies {
     compile("org.projectlombok:lombok:${lombokVersion}")
     compile('commons-io:commons-io:2.5')
@@ -41,31 +38,37 @@ dependencies {
     testCompile("org.spockframework:spock-core:${spockSpringVersion}")
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = gradleVersion
-}
-
-test {
-    testLogging {
-        events 'passed', 'skipped', 'failed'
-    }
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled true
-    }
-}
-
-if (project.hasProperty('bintrayUser') && project.hasProperty('bintrayKey')) {
-    apply from: 'https://raw.githubusercontent.com/FINTlibs/fint-buildscripts/v1.0.14/bintray.gradle'
-}
-
 wsdl2java {
     generatedWsdlDir = file('generated-sources')
-    wsdlsToGenerate = [['-client', '-wsdlLocation', 'classpath:ISIPartnerEndpoint.wsdl', 'src/main/resources/ISIPartnerEndpoint.wsdl']]
+    wsdlsToGenerate = [
+            ['-client', '-wsdlLocation', 'classpath:ISIPartnerEndpoint.wsdl', 'src/main/resources/ISIPartnerEndpoint.wsdl']
+    ]
+
 }
 
 wsdl2javaExt {
-    cxfVersion = '3.1.11'
+    cxfVersion = '3.3.4'
+    deleteGeneratedSourcesOnClean = true
+}
+
+if (project.hasProperty('reposiliteUsername') && project.hasProperty('reposiliteToken')) {
+    publishing {
+        repositories {
+            maven {
+                url "https://repo.fintlabs.no/releases"
+                credentials {
+                    username = reposiliteUsername
+                    password = reposiliteToken
+                }
+                authentication {
+                    basic(BasicAuthentication)
+                }
+            }
+        }
+        publications {
+            maven(MavenPublication) {
+                from(components.java)
+            }
+        }
+    }
 }
